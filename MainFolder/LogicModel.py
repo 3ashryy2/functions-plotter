@@ -3,12 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class LogicModel:
-    # def __init__(self,str,hi,lo):
-    #     self.str=str.replace('^','**')
-    #     self.hi=hi
-    #     self.lo=lo
-    #     self.compiled_str=compile(self.str,'name','eval')
-
     
     def __init__(self):
         self.str=''
@@ -29,17 +23,14 @@ class LogicModel:
     
     def y(self):
         return eval(self.str,{},{'x':self.x()})
-
-    def get_compiled_str(self):
-        return self.compiled_str
     
     def validate_input(self):
         
         if not re.match(r'^[0-9+\-*/^x()]+$', self.str):
-            raise ValueError("Invalid function string")
+            raise ValueError("Invalid function input")
             
         if (self.lo>self.hi):
-            raise ValueError("min must be less than max")
+            raise ValueError("Min must be less than Max")
         
         return True
     
@@ -48,6 +39,7 @@ class LogicModel:
            X=self.x()
            Y=self.y()
            plt.plot(X,Y,color='red')
+           plt.grid()
            plt.show()
 
        
