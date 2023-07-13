@@ -2,10 +2,10 @@ import re
 import matplotlib.pyplot as plt
 import numpy as np
 
-class LogicModel:
+class Logic:
     
     def __init__(self):
-        self.str=''
+        self.func='x*0'
         self.hi=0
         self.lo=0
 
@@ -15,18 +15,18 @@ class LogicModel:
     def set_lo(self,lo):
         self.lo=lo
 
-    def set_str(self,str):
-        self.str=str.replace('^','**')
+    def set_func(self,func):
+        self.func=func.replace('^','**')
        
     def x(self):
        return np.linspace(self.lo,self.hi)
     
     def y(self):
-        return eval(self.str,{},{'x':self.x()})
+        return eval(self.func,{},{'x':self.x()})
     
     def validate_input(self):
         
-        if not re.match(r'^[0-9+\-*/^x()]+$', self.str):
+        if not re.match(r'^[0-9+\-*/^x()]+$', self.func):
             raise ValueError("Invalid function input")
             
         if (self.lo>self.hi):
@@ -41,17 +41,9 @@ class LogicModel:
            plt.plot(X,Y,color='red')
            plt.grid()
            plt.show()
-
-       
-    def get_str(self):
-        return self.str
-
+ 
+    def get_func(self):
+        return self.func
 
 
-if __name__=='__main__':
-    s=LogicModel()
-    s.set_str('x^2')
-    s.set_hi(10)
-    s.set_lo(-10)
-    s.plot_graph()
 
