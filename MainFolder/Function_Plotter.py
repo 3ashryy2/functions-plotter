@@ -3,8 +3,6 @@ from PySide2 import QtWidgets
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 import numpy as np
-from LogicModel import Logic
-
 
 class PlotWidget(FigureCanvasQTAgg):
 
@@ -17,15 +15,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.logic=Logic()
-
         self.plot = PlotWidget(self)
+
         self.input_gb = QtWidgets.QGroupBox("Input")
         self.func_le = QtWidgets.QLineEdit()
         self.xmin_le = QtWidgets.QLineEdit()
         self.xmax_le = QtWidgets.QLineEdit()
 
-       
         input_layout = QtWidgets.QFormLayout()
         input_layout.addRow("Function f(x):", self.func_le)
         input_layout.addRow("X min:", self.xmin_le)
@@ -33,8 +29,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.input_gb.setLayout(input_layout)
 
         self.plot_btn = QtWidgets.QPushButton("Plot")
-        self.plot_btn.clicked.connect(self.plot_graph())
-        
+        self.plot_btn.clicked.connect(self.plot_graph)
 
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addWidget(self.input_gb)
@@ -48,20 +43,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("Function Plotter")
 
     def plot_graph(self):
-        
+
+
         try:
-            func_str = self.func_le.text()
+            tmp = self.func_le.text()
+            func_str=tmp.replace('^','**')
             x_min = float(self.xmin_le.text()) 
             x_max = float(self.xmax_le.text())
-            
-            self.logic.set_func(func_str)
-            self.logic.set_hi(x_max)
-            self.logic.set_lo(x_min)
 
-            self.logic.validate_input()
-               
-            x=self.logic.x() 
-            y=self.logic.y()
+
+            if not re.match(r'^[0-9+\-*/^x()]+$', func_str):
+                raise ValueError("Invalid function string")
+            
+            if (x_min>x_max):
+                raise ValueError("min must be less than max")
+
+            x = np.linspace(x_min, x_max)
+            y = eval(func_str,{},{'x':x})
+            
 
             self.plot.ax.clear()
             self.plot.ax.plot(x, y,color='red')
@@ -75,8 +74,6 @@ class MainWindow(QtWidgets.QMainWindow):
             print(error_msg)
             QtWidgets.QMessageBox.critical(self, "Error", error_msg)
 
-
-        
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
