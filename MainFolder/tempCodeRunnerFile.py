@@ -14,16 +14,22 @@ class LogicModel:
         self.str=''
         self.hi=0
         self.lo=0
+        self.compiled_str=None
 
-    def set_hi(self,hi):
-        self.hi=hi
 
-    def set_lo(self,lo):
-        self.lo=lo
+    def set_hi(self,hii):
+        self.hi=hii
 
-    def set_str(self,str):
-        self.str=str.replace('^','**')
-       
+    def set_lo(self,loo):
+        self.lo=loo
+
+    def set_str(self,strr):
+        self.str=strr.replace('^','**')
+        self.set_compiledStr
+
+    def set_compiledStr(self):
+        self.compiled_str=compile(self.str,'name','eval')
+
     def x(self):
        return np.linspace(self.lo,self.hi)
     
@@ -44,15 +50,16 @@ class LogicModel:
         return True
     
     def plot_graph(self):
-        if self.validate_input()==True:
-           X=self.x()
-           Y=self.y()
-           plt.plot(X,Y,color='red')
-           plt.show()
+        #if self.validate_input()==True:
+        plt.plot(self.x(),self.y(),color='red')
+        plt.show()
 
        
     def get_str(self):
         return self.str
+
+
+
 
 
 
@@ -61,5 +68,5 @@ if __name__=='__main__':
     s.set_str('x^2')
     s.set_hi(10)
     s.set_lo(-10)
-    s.plot_graph()
-
+    s.plot_graph
+    plt.show
