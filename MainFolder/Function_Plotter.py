@@ -1,7 +1,7 @@
 import re
 from PySide2 import QtWidgets
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 import numpy as np
 
 class PlotWidget(FigureCanvasQTAgg):
@@ -31,10 +31,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.plot_btn = QtWidgets.QPushButton("Plot")
         self.plot_btn.clicked.connect(self.plot_graph)
 
+        self.toolbar = NavigationToolbar(self.plot, self)
+
+
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addWidget(self.input_gb)
         main_layout.addWidget(self.plot_btn)
+        main_layout.addWidget(self.toolbar)
         main_layout.addWidget(self.plot)
+        
 
         self.central_widget = QtWidgets.QWidget()
         self.central_widget.setLayout(main_layout)
@@ -42,38 +47,72 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setWindowTitle("Function Plotter")
 
-    def plot_graph(self):
+    def validate_func(self,func_str):
+        
+        if not re.match(r'^[0-9+\-*/^x()]+$', func_str):
+            return -1
+        return 0
+    
+    def validate_xlimit(self,xlimit):
+        if xlimit=='':
+            return -1
+        if not re.match(r'^\d+$', xlimit):
+            return -1
+        
+        return 0
+        
 
-
+    def validate_input(self):
         try:
             tmp = self.func_le.text()
             func_str=tmp.replace('^','**')
+
+            if self.validate_func(func_str)==-1:
+                raise ValueError("Invalid function input")
+            
+            if  self.validate_xlimit(self.xmax_le.text())==-1:
+                raise ValueError("Invalid input in Xmax")
+            
+            if self.validate_xlimit(self.xmin_le.text())==-1:
+                raise ValueError("Invalid input in Xmin")
+            
             x_min = float(self.xmin_le.text()) 
             x_max = float(self.xmax_le.text())
 
 
-            if not re.match(r'^[0-9+\-*/^x()]+$', func_str):
-                raise ValueError("Invalid function string")
-            
             if (x_min>x_max):
                 raise ValueError("min must be less than max")
-
-            x = np.linspace(x_min, x_max)
-            y = eval(func_str,{},{'x':x})
-            
-
-            self.plot.ax.clear()
-            self.plot.ax.plot(x, y,color='red')
-            self.plot.ax.set_xlabel('X')
-            self.plot.ax.set_ylabel('Y')
-            self.plot.ax.grid()
-            self.plot.draw()
 
         except Exception as e:
             error_msg = str(e)
             print(error_msg)
             QtWidgets.QMessageBox.critical(self, "Error", error_msg)
 
+
+    def plot_graph(self):
+        
+            self.validate_input()
+            tmp = self.func_le.text()
+            func_str=tmp.replace('^','**')
+            x_min = float(self.xmin_le.text()) 
+            x_max = float(self.xmax_le.text())
+
+
+            if (x_min>x_max):
+                raise ValueError("min must be less than max")
+
+            x = np.linspace(x_min, x_max)
+            y = eval(func_str)
+            
+
+            self.plot.ax.clear()
+            self.plot.ax.plot(x, y)
+            self.plot.ax.set_xlabel('X')
+            self.plot.ax.set_ylabel('Y')
+            self.plot.ax.grid()
+            self.plot.draw()
+
+        
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
