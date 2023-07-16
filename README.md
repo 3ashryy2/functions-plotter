@@ -38,7 +38,7 @@ Qt5
 # Installation
 
 Clone the repository
-git clone https://github.com/user/function-plotter
+git clone https://github.com/3ashryy2/function-plotter
 
 
 Install requirements
