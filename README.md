@@ -45,7 +45,7 @@ Install requirements
 pip install -r requirements.txt
 
 Run the app
-python function_plotter.py
+python Function_Plotter.py
 
 # Contributing
 Contributions are welcome! Please open an issue or PR for bug fixes and improvements.
